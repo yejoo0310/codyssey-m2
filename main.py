@@ -1,4 +1,5 @@
 from models import Quiz
+from controller import QuizGame
 
 def main():
     q1 = Quiz("1 + 1은?", ["1", "2", "3", "4"], 2)
@@ -10,6 +11,9 @@ def main():
         print("ans")
     else:
         print("no")
+    
+    qg1 = QuizGame()
+    qg1.run()
 
 if __name__ == "__main__":
     main()

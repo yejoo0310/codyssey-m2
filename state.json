@@ -49,7 +49,17 @@
                 "March"
             ],
             "answer": 4
+        },
+        {
+            "question": "hello",
+            "choices": [
+                "hi",
+                "hello",
+                "hi",
+                "hi"
+            ],
+            "answer": 2
         }
     ],
-    "best_score": 20
+    "best_score": 100
 }

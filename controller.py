@@ -49,7 +49,7 @@ class QuizGame:
                     self.play_quiz()
                 elif cmd == 2:
                     print("퀴즈 추가")
-                    # self.add_quiz()
+                    self.add_quiz()
                 elif cmd == 3:
                     print("퀴즈 목록")
                     # self.view_quiz_list()
@@ -165,3 +165,42 @@ class QuizGame:
             except (KeyboardInterrupt, EOFError):
                 print("\n사용자에 의해 퀴즈 풀기를 중단합니다.\n")
                 return None
+            
+    def add_quiz(self):
+        print("📌 새로운 퀴즈를 추가합니다.\n")
+        try:
+            while True:
+                question = input("문제를 입력하세요: ").strip()
+                if question:
+                    break
+                print("문제는 비어있을 수 없습니다. 다시 입력해주세요.")
+            
+            choices = []
+            for i in range(1, 5):
+                while True:
+                    choice = input(f"선택지 {i}: ").strip()
+                    if choice:
+                        choices.append(choice)
+                        break
+                    print(f"선택지 {i}은(는) 비어있을 수 없습니다. 다시 입력해주세요.") 
+            
+            while True:
+                answer = input("정답 번호 (1-4): ").strip()
+                if not answer:
+                    print("정답은 비어있을 수 없습니다. 다시 입력해주세요.")
+                    continue
+
+                try:
+                    answer = int(answer)
+                    if 1 <= answer <= 4:
+                        break
+                    print("범위를 넘어갔습니다. 1-4 사이의 정답 번호를 입력해주세요.")
+                except ValueError:
+                    print("잘못된 입력입니다. 1-4 사이의 정답 번호를 입력해주세요.")
+            
+            new_quiz = Quiz(question, choices, answer)
+            self.quizzes.append(new_quiz)
+            self.save_state()
+            print("\n퀴즈가 정상적으로 저장되었습니다!\n")
+        except (KeyboardInterrupt, EOFError):
+            print("\n퀴즈 추가가 취소되었습니다. 메뉴로 돌아갑니다.\n")

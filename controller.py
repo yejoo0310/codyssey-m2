@@ -52,7 +52,7 @@ class QuizGame:
                     self.add_quiz()
                 elif cmd == 3:
                     print("퀴즈 목록")
-                    # self.view_quiz_list()
+                    self.view_quiz_list()
                 elif cmd == 4:
                     print("점수 확인")
                     # self.show_best_score()
@@ -204,3 +204,13 @@ class QuizGame:
             print("\n퀴즈가 정상적으로 저장되었습니다!\n")
         except (KeyboardInterrupt, EOFError):
             print("\n퀴즈 추가가 취소되었습니다. 메뉴로 돌아갑니다.\n")
+
+    def view_quiz_list(self):
+        if not self.quizzes:
+            print("\n등록된 퀴즈가 없습니다. 먼저 추가해주세요.")
+            return
+        print(f"\n📋 등록된 퀴즈 목록 (총 {len(self.quizzes)}개)")
+        print("\n----------------------------------------")
+        for i, quiz in enumerate(self.quizzes, start = 1):
+            print(f"[문제{i}] {quiz.question}")
+        print("----------------------------------------")

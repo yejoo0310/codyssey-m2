@@ -10,7 +10,7 @@ class QuizGame:
         self.load_state()
     
     def show_menu(self):
-        print("========================================")
+        print("\n========================================")
         print("         🎯 나만의 퀴즈 게임 🎯")
         print("========================================")
         print("1. 퀴즈 풀기")
@@ -45,23 +45,18 @@ class QuizGame:
                     continue
 
                 if cmd == 1:
-                    print("퀴즈 풀기")
                     self.play_quiz()
                 elif cmd == 2:
-                    print("퀴즈 추가")
                     self.add_quiz()
                 elif cmd == 3:
-                    print("퀴즈 목록")
                     self.view_quiz_list()
                 elif cmd == 4:
-                    print("점수 확인")
                     self.show_best_score()
                 elif cmd == 5:
-                    print("프로그램 종료")
                     self.save_state()
                     break
         except (KeyboardInterrupt, EOFError):
-            print("사용자에 의해 프로그램이 강제 종료되었습니다.")
+            print("\n사용자에 의해 프로그램이 강제 종료되었습니다.")
             self.save_state()
 
     def set_default_quizzes(self):
@@ -115,10 +110,10 @@ class QuizGame:
     
     def play_quiz(self):
         if not self.quizzes or len(self.quizzes) < 5:
-            print("등록된 퀴즈가 없습니다. 먼저 퀴즈를 추가해주세요!")
+            print("\n등록된 퀴즈가 없습니다. 먼저 퀴즈를 추가해주세요!")
             return
         
-        print(f"📝 퀴즈를 시작합니다! (총 {len(self.quizzes)}문제)")
+        print(f"\n📝 퀴즈를 시작합니다! (총 {len(self.quizzes)}문제)")
 
         current_score = 0
 
@@ -127,7 +122,7 @@ class QuizGame:
             user_input = self.get_valid_input()
 
             if user_input is None:
-                return # 어디로 가게 되는지 이따 검증해보자
+                return
             
             if quiz.is_correct(user_input):
                 print("정답입니다!")
@@ -152,13 +147,13 @@ class QuizGame:
                 "best_count": score
             }
             self.save_state()
-        print("========================================\n\n")
+        print("========================================\n")
 
             
     def get_valid_input(self):
         while True:
             try:
-                user_input = input("정답 입력: ")
+                user_input = input("\n정답 입력: ")
                 if not user_input:
                     print("입력이 비어있습니다. 1-4 사이의 번호를 입력해주세요.")
                     continue
@@ -174,7 +169,7 @@ class QuizGame:
                 return None
             
     def add_quiz(self):
-        print("📌 새로운 퀴즈를 추가합니다.\n")
+        print("\n📌 새로운 퀴즈를 추가합니다.\n")
         try:
             while True:
                 question = input("문제를 입력하세요: ").strip()
@@ -214,7 +209,7 @@ class QuizGame:
 
     def view_quiz_list(self):
         if not self.quizzes:
-            print("\n등록된 퀴즈가 없습니다. 먼저 추가해주세요.")
+            print("\n등록된 퀴즈가 없습니다. 먼저 추가해주세요.\n")
             return
         print(f"\n📋 등록된 퀴즈 목록 (총 {len(self.quizzes)}개)")
         print("\n----------------------------------------")
@@ -226,4 +221,4 @@ class QuizGame:
         if self.best_record["score"] == 0:
             print("\n아직 기록된 최고 점수가 없습니다.")
             return
-        print(f"🏆 최고 점수: {self.best_record["score"]}점 ({self.best_record["total_count"]}문제 중 {self.best_record["best_count"]}문제 정답)\n")
+        print(f"\n🏆 최고 점수: {self.best_record["score"]}점 ({self.best_record["total_count"]}문제 중 {self.best_record["best_count"]}문제 정답)\n")

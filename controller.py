@@ -5,7 +5,7 @@ import json
 class QuizGame:
     def __init__(self):
         self.quizzes = []
-        self.best_score = 0
+        self.best_record = {"score": 0, "total_count": 0, "best_count": 0}
         self.file_path = "state.json"
         self.load_state()
     
@@ -80,7 +80,7 @@ class QuizGame:
                 raise FileNotFoundError
             with open(self.file_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                self.best_score = data.get("best_score", 0)
+                self.best_record = data.get("best_record", {"score": 0, "total_count": 0, "best_count": 0})
 
                 temp_quizzess = []
                 for q in data.get("quizzes", []):
@@ -106,7 +106,7 @@ class QuizGame:
         try:
             data = {
                 "quizzes": [quiz.to_dict() for quiz in self.quizzes],
-                "best_score": self.best_score
+                "best_record": self.best_record
             }   
             with open(self.file_path, "w", encoding="utf-8") as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
@@ -140,10 +140,17 @@ class QuizGame:
     def show_result(self, score):
         percentage = int((score/len(self.quizzes)) * 100)
         print("\n\n========================================")
+        if score == 0 or percentage == 0:
+            print("한 문제도 맞히지 못했습니다.")
+            return
         print(f"🏆 결과: {len(self.quizzes)}문제 중 {score}문제 정답! ({percentage}점)")
-        if (percentage > self.best_score):
+        if percentage > self.best_record["score"] or (percentage == self.best_record["score"] and len(self.quizzes) > self.best_record["total_count"]):
             print("🎉 새로운 최고 점수입니다! 최고 점수가 갱신되었습니다!")
-            self.best_score = percentage
+            self.best_record = {
+                "score": percentage,
+                "total_count": len(self.quizzes),
+                "best_count": score
+            }
             self.save_state()
         print("========================================\n\n")
 
@@ -216,7 +223,7 @@ class QuizGame:
         print("----------------------------------------")
 
     def show_best_score(self):
-        if not self.best_score:
+        if self.best_record["score"] == 0:
             print("\n아직 기록된 최고 점수가 없습니다.")
             return
-        print(f"🏆 최고 점수: {self.best_score}점\n")      
+        print(f"🏆 최고 점수: {self.best_record["score"]}점 ({self.best_record["total_count"]}문제 중 {self.best_record["best_count"]}문제 정답)\n")

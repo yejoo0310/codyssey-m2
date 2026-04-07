@@ -55,7 +55,7 @@ class QuizGame:
                     self.view_quiz_list()
                 elif cmd == 4:
                     print("점수 확인")
-                    # self.show_best_score()
+                    self.show_best_score()
                 elif cmd == 5:
                     print("프로그램 종료")
                     self.save_state()
@@ -214,3 +214,9 @@ class QuizGame:
         for i, quiz in enumerate(self.quizzes, start = 1):
             print(f"[문제{i}] {quiz.question}")
         print("----------------------------------------")
+
+    def show_best_score(self):
+        if not self.best_score:
+            print("\n아직 기록된 최고 점수가 없습니다.")
+            return
+        print(f"🏆 최고 점수: {self.best_score}점\n")      

@@ -46,7 +46,7 @@ class QuizGame:
 
                 if cmd == 1:
                     print("퀴즈 풀기")
-                    # self.play_quiz()
+                    self.play_quiz()
                 elif cmd == 2:
                     print("퀴즈 추가")
                     # self.add_quiz()
@@ -112,3 +112,56 @@ class QuizGame:
                 json.dump(data, f, ensure_ascii=False, indent=4)
         except Exception:
             print("저장 중 오류 발생")
+    
+    def play_quiz(self):
+        if not self.quizzes or len(self.quizzes) < 5:
+            print("등록된 퀴즈가 없습니다. 먼저 퀴즈를 추가해주세요!")
+            return
+        
+        print(f"📝 퀴즈를 시작합니다! (총 {len(self.quizzes)}문제)")
+
+        current_score = 0
+
+        for i, quiz in enumerate(self.quizzes, start = 1):
+            quiz.display(i)
+            user_input = self.get_valid_input()
+
+            if user_input is None:
+                return # 어디로 가게 되는지 이따 검증해보자
+            
+            if quiz.is_correct(user_input):
+                print("정답입니다!")
+                current_score += 1
+            else:
+                print(f"틀렸습니다. 정답은 {quiz.answer}번입니다.")
+        
+        self.show_result(current_score)
+
+    def show_result(self, score):
+        percentage = int((score/len(self.quizzes)) * 100)
+        print("\n\n========================================")
+        print(f"🏆 결과: {len(self.quizzes)}문제 중 {score}문제 정답! ({percentage}점)")
+        if (percentage > self.best_score):
+            print("🎉 새로운 최고 점수입니다! 최고 점수가 갱신되었습니다!")
+            self.best_score = percentage
+            self.save_state()
+        print("========================================\n\n")
+
+            
+    def get_valid_input(self):
+        while True:
+            try:
+                user_input = input("정답 입력: ")
+                if not user_input:
+                    print("입력이 비어있습니다. 1-4 사이의 번호를 입력해주세요.")
+                    continue
+
+                ans = int(user_input)
+                if 1 <= ans <= 4: 
+                    return ans
+                print("범위를 넘어간 값입니다. 1-4 사이의 번호를 입력해주세요.")
+            except ValueError:
+                print("잘못된 입력입니다. 1-4 사이의 번호를 입력해주세요.")
+            except (KeyboardInterrupt, EOFError):
+                print("\n사용자에 의해 퀴즈 풀기를 중단합니다.\n")
+                return None

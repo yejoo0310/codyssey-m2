@@ -1,79 +1,53 @@
 {
-    "quizzes": [
-        {
-            "question": "우유가 넘어지면?",
-            "choices": [
-                "밀크콩",
-                "초코우유",
-                "아야",
-                "커피"
-            ],
-            "answer": 3
-        },
-        {
-            "question": "왕이 넘어지면?",
-            "choices": [
-                "킹콩",
-                "고릴라",
-                "아야",
-                "콩킹"
-            ],
-            "answer": 1
-        },
-        {
-            "question": "왕이 양쪽에 있으면?",
-            "choices": [
-                "여기저기",
-                "우왕좌왕",
-                "양쪽왕",
-                "왕이둘"
-            ],
-            "answer": 2
-        },
-        {
-            "question": "Codyssey 입학연수과정에서 시험 보는 요일은?",
-            "choices": [
-                "월요일",
-                "수요일",
-                "금요일",
-                "토요일"
-            ],
-            "answer": 3
-        },
-        {
-            "question": "3월은 영어로?",
-            "choices": [
-                "a",
-                "b",
-                "c",
-                "March"
-            ],
-            "answer": 4
-        }
-    ],
-    "best_record": {
-        "score": 100,
-        "total_count": 6,
-        "best_count": 6
+  "quizzes": [
+    {
+      "question": "우유가 넘어지면?",
+      "choices": ["밀크콩", "초코우유", "아야", "커피"],
+      "answer": 3,
+      "hint": "고개를 돌려서 '우유'를 보세요."
     },
-    "history": [
-        {
-            "played_at": "2026-04-09 00:31:33",
-            "score": 100,
-            "total_count": 3,
-            "correct_count": 3
-        },
-        {
-            "played_at": "2026-04-09 00:31:57",
-            "score": 100,
-            "total_count": 2,
-            "correct_count": 2
-        },
-        {
-            "played_at": "2026-04-09 00:32:19",
-            "score": 80,
-            "total_count": 5,
-            "correct_count": 4
-        }
-    ]
+    {
+      "question": "왕이 넘어지면?",
+      "choices": ["킹콩", "고릴라", "아야", "콩킹"],
+      "answer": 1,
+      "hint": "왕의 영어 표현을 생각해보세요."
+    },
+    {
+      "question": "왕이 양쪽에 있으면?",
+      "choices": ["여기저기", "우왕좌왕", "양쪽왕", "왕이둘"],
+      "answer": 2,
+      "hint": "왕이 왼쪽에도 있고 오른쪽에도 있는 상황을 떠올려보세요."
+    },
+    {
+      "question": "Codyssey 입학연수과정에서 시험 보는 요일은?",
+      "choices": ["월요일", "수요일", "금요일", "토요일"],
+      "answer": 3,
+      "hint": "주말 바로 전 평일입니다."
+    },
+    {
+      "question": "3월은 영어로?",
+      "choices": ["a", "b", "c", "March"],
+      "answer": 4,
+      "hint": "'M'으로 시작합니다."
+    }
+  ],
+  "best_record": {
+    "score": 6,
+    "total_count": 4,
+    "best_count": 3
+  },
+  "history": [
+    {
+      "played_at": "2026-04-09 01:08:47",
+      "score": 3,
+      "total_count": 4,
+      "correct_count": 3
+    },
+    {
+      "played_at": "2026-04-09 01:09:06",
+      "score": 6,
+      "total_count": 4,
+      "correct_count": 3
+    }
+  ]
 }

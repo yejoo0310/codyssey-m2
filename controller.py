@@ -11,7 +11,7 @@ class QuizGame:
     
     def show_menu(self):
         min_value = 1
-        max_value = 5
+        max_value = 6
         
         print("\n========================================")
         print("         🎯 나만의 퀴즈 게임 🎯")
@@ -20,7 +20,8 @@ class QuizGame:
         print("2. 퀴즈 추가")
         print("3. 퀴즈 목록")
         print("4. 점수 확인")
-        print("5. 종료")
+        print("5. 퀴즈 삭제")
+        print("6. 종료")
         print("========================================")
 
         user_input = self.get_input_number(
@@ -49,6 +50,8 @@ class QuizGame:
                 elif choice == 4:
                     self.show_best_score()
                 elif choice == 5:
+                    self.delete_quiz()
+                elif choice == 6:
                     self.save_state()
                     print("퀴즈 게임이 종료되었습니다.")
                     break
@@ -254,3 +257,29 @@ class QuizGame:
             print("\n아직 기록된 최고 점수가 없습니다.")
             return
         print(f"\n🏆 최고 점수: {self.best_record['score']}점 ({self.best_record['total_count']}문제 중 {self.best_record['best_count']}문제 정답)\n")
+
+    def delete_quiz(self):
+        if not self.quizzes:
+            print("\n등록된 퀴즈가 0개이므로 삭제가 불가합니다.\n")
+            return
+        min_value = 1
+        max_value = len(self.quizzes)
+        
+        print("\n퀴즈 삭제를 시작합니다.\n")
+        self.view_quiz_list()
+        
+        user_input = self.get_input_number(
+            f"삭제 번호({min_value}-{max_value}): ",
+            min_value=min_value,
+            max_value=max_value,
+            empty_message=f"입력이 비어있습니다. {min_value}-{max_value} 사이의 문제 번호를 입력해주세요.",
+            invalid_message=f"잘못된 입력입니다. {min_value}-{max_value} 사이의 문제 번호를 입력해주세요.",
+            cancel_message="\n사용자에 의해 퀴즈 삭제를 중단합니다.",
+            return_none=True
+        )
+        if user_input is None:
+            return
+        
+        removed = self.quizzes.pop(user_input-1)
+        print(f"'[{user_input}] {removed.question}' 문제를 삭제하였습니다.")
+        print(f"남은 문제는 {len(self.quizzes)}개입니다.")

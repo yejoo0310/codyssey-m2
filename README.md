@@ -182,3 +182,5 @@ codyssey-m2/
 - `history.score`: 해당 게임에서 획득한 실제 점수입니다.
 - `history.total_count`: 해당 게임에서 푼 문제 수입니다.
 - `history.correct_count`: 해당 게임에서 맞힌 문제 수입니다.
+
+codyssey-m2-clone

@@ -10,6 +10,9 @@ class QuizGame:
         self.load_state()
     
     def show_menu(self):
+        min_value = 1
+        max_value = 5
+        
         print("\n========================================")
         print("         🎯 나만의 퀴즈 게임 🎯")
         print("========================================")
@@ -20,43 +23,36 @@ class QuizGame:
         print("5. 종료")
         print("========================================")
 
-        user_input = input("선택: ").strip()
-
-        if not user_input:
-            print("입력이 비어있습니다. 1-5 사이의 메뉴 번호를 입력해주세요.")
-            return None
+        user_input = self.get_input_number(
+            prompt="선택: ",
+            min_value=min_value,
+            max_value=max_value,
+            empty_message=f"입력이 비어있습니다. {min_value}-{max_value} 사이의 메뉴 번호를 입력해주세요.",
+            invalid_message=f"잘못된 입력입니다. {min_value}-{max_value} 사이의 메뉴 번호를 입력해주세요.",
+            cancel_message="\n사용자에 의해 프로그램이 강제 종료되었습니다.",
+            return_none=False
+        )
         
-        try:
-            cmd = int(user_input)
-
-            if 1 <= cmd <= 5:
-                return cmd
-            print("범위를 넘어간 값입니다. 1-5 사이의 메뉴 번호를 입력해주세요.")
-            return None
-        except ValueError:
-            print("잘못된 입력입니다. 1-5 사이의 메뉴 번호를 입력해주세요.")
-            return None
+        return user_input
     
     def run(self):
         try:
             while True:
-                cmd = self.show_menu()
-                if cmd is None:
-                    continue
+                choice = self.show_menu()
 
-                if cmd == 1:
+                if choice == 1:
                     self.play_quiz()
-                elif cmd == 2:
+                elif choice == 2:
                     self.add_quiz()
-                elif cmd == 3:
+                elif choice == 3:
                     self.view_quiz_list()
-                elif cmd == 4:
+                elif choice == 4:
                     self.show_best_score()
-                elif cmd == 5:
+                elif choice == 5:
                     self.save_state()
+                    print("퀴즈 게임이 종료되었습니다.")
                     break
         except (KeyboardInterrupt, EOFError):
-            print("\n사용자에 의해 프로그램이 강제 종료되었습니다.")
             self.save_state()
 
     def set_default_quizzes(self):
@@ -107,8 +103,49 @@ class QuizGame:
                 json.dump(data, f, ensure_ascii=False, indent=4)
         except Exception:
             print("저장 중 오류 발생")
+
+    def get_input_number(self, prompt, min_value, max_value, empty_message, invalid_message, cancel_message, return_none):
+        while True:
+            try:
+                value = input(prompt).strip()
+                
+                if not value:
+                    print(empty_message)
+                    continue
+                
+                number = int(value)
+                
+                if min_value <= number <= max_value:
+                    return number
+                
+                print(invalid_message)
+            except ValueError:
+                print(invalid_message)
+            except (KeyboardInterrupt, EOFError):
+                print(cancel_message)
+                if return_none:
+                    return None
+                raise 
+    
+    def get_input_string(self, prompt, empty_message, cancel_message, return_none):
+        while True:
+            try:
+                value = input(prompt).strip()
+
+                if not value:
+                    print(empty_message)
+                    continue
+                
+                return value
+            except (KeyboardInterrupt, EOFError):
+                print(cancel_message)
+                if return_none:
+                    return None
+                raise
     
     def play_quiz(self):
+        min_value = 1
+        max_value = 4
         if not self.quizzes or len(self.quizzes) < 5:
             print("\n등록된 퀴즈가 없습니다. 먼저 퀴즈를 추가해주세요!")
             return
@@ -119,7 +156,15 @@ class QuizGame:
 
         for i, quiz in enumerate(self.quizzes, start = 1):
             quiz.display(i)
-            user_input = self.get_valid_input()
+            user_input = self.get_input_number(
+                prompt="\n정답 입력: ",
+                min_value=min_value,
+                max_value=max_value,
+                empty_message=f"입력이 비어있습니다. {min_value}-{max_value} 사이의 번호를 입력해주세요.",
+                invalid_message=f"잘못된 입력입니다. {min_value}-{max_value} 사이의 번호를 입력해주세요.",
+                cancel_message="\n사용자에 의해 퀴즈 풀기를 중단합니다.",
+                return_none=True
+            )
 
             if user_input is None:
                 return
@@ -150,62 +195,49 @@ class QuizGame:
         print("========================================\n")
 
             
-    def get_valid_input(self):
-        while True:
-            try:
-                user_input = input("\n정답 입력: ")
-                if not user_input:
-                    print("입력이 비어있습니다. 1-4 사이의 번호를 입력해주세요.")
-                    continue
-
-                ans = int(user_input)
-                if 1 <= ans <= 4: 
-                    return ans
-                print("범위를 넘어간 값입니다. 1-4 사이의 번호를 입력해주세요.")
-            except ValueError:
-                print("잘못된 입력입니다. 1-4 사이의 번호를 입력해주세요.")
-            except (KeyboardInterrupt, EOFError):
-                print("\n사용자에 의해 퀴즈 풀기를 중단합니다.\n")
-                return None
-            
     def add_quiz(self):
         print("\n📌 새로운 퀴즈를 추가합니다.\n")
-        try:
-            while True:
-                question = input("문제를 입력하세요: ").strip()
-                if question:
-                    break
-                print("문제는 비어있을 수 없습니다. 다시 입력해주세요.")
-            
-            choices = []
-            for i in range(1, 5):
-                while True:
-                    choice = input(f"선택지 {i}: ").strip()
-                    if choice:
-                        choices.append(choice)
-                        break
-                    print(f"선택지 {i}은(는) 비어있을 수 없습니다. 다시 입력해주세요.") 
-            
-            while True:
-                answer = input("정답 번호 (1-4): ").strip()
-                if not answer:
-                    print("정답은 비어있을 수 없습니다. 다시 입력해주세요.")
-                    continue
-
-                try:
-                    answer = int(answer)
-                    if 1 <= answer <= 4:
-                        break
-                    print("범위를 넘어갔습니다. 1-4 사이의 정답 번호를 입력해주세요.")
-                except ValueError:
-                    print("잘못된 입력입니다. 1-4 사이의 정답 번호를 입력해주세요.")
-            
-            new_quiz = Quiz(question, choices, answer)
-            self.quizzes.append(new_quiz)
-            self.save_state()
-            print("\n퀴즈가 정상적으로 저장되었습니다!\n")
-        except (KeyboardInterrupt, EOFError):
-            print("\n퀴즈 추가가 취소되었습니다. 메뉴로 돌아갑니다.\n")
+        
+        question = self.get_input_string(
+            prompt="문제를 입력하세요: ",
+            empty_message="문제는 비어있을 수 없습니다. 다시 입력해주세요.",
+            cancel_message="\n퀴즈 추가가 취소되었습니다. 메뉴로 돌아갑니다.\n",
+            return_none=True
+        )
+        if question is None:
+            return
+        
+        choices = []
+        for i in range(1, 5):
+            choice = self.get_input_string(
+                prompt=f"선택지 {i}: ",
+                empty_message=f"선택지 {i}은(는) 비어있을 수 없습니다. 다시 입력해주세요.",
+                cancel_message="\n퀴즈 추가가 취소되었습니다. 메뉴로 돌아갑니다.\n",
+                return_none=True
+            )
+            if choice is None:
+                return
+            choices.append(choice)
+        
+        min_value=1
+        max_value=4
+        answer = self.get_input_number(
+            prompt=f"정답 번호 ({min_value}-{max_value}): ",
+            min_value=min_value,
+            max_value=max_value,
+            empty_message="정답은 비어있을 수 없습니다. 다시 입력해주세요.",
+            invalid_message=f"잘못된 입력입니다. {min_value}-{max_value} 사이의 정답 번호를 입력해주세요.",
+            cancel_message="\n퀴즈 추가가 취소되었습니다. 메뉴로 돌아갑니다.\n",
+            return_none=True
+        )
+        if answer is None:
+            return
+        
+        new_quiz = Quiz(question, choices, answer)
+        self.quizzes.append(new_quiz)
+        self.save_state()
+        print("\n퀴즈가 정상적으로 저장되었습니다!\n")
+        
 
     def view_quiz_list(self):
         if not self.quizzes:

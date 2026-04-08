@@ -77,11 +77,11 @@ class QuizGame:
                 for q in data.get("quizzes", []):
                     new_quiz = Quiz(q['question'], q['choices'], q['answer'])
                     temp_quizzess.append(new_quiz)
-                if len(temp_quizzess) >= 5:
+                if len(temp_quizzess) >= 1:
                     self.quizzes = temp_quizzess
                     print("퀴즈를 불러왔습니다.")
                 else:
-                    print("현재 퀴즈 문제가 5개가 되지 않습닌다. 기본 문제를 생성하겠습니다.")
+                    print("현재 문제가 하나도 없습니다. 기본 문제를 생성하겠습니다.")
                     self.set_default_quizzes()
         except FileNotFoundError:
             print("파일이 존재하지 않습니다. 기본 문제를 생성하겠습니다.")
@@ -146,7 +146,7 @@ class QuizGame:
     def play_quiz(self):
         min_value = 1
         max_value = 4
-        if not self.quizzes or len(self.quizzes) < 5:
+        if not self.quizzes:
             print("\n등록된 퀴즈가 없습니다. 먼저 퀴즈를 추가해주세요!")
             return
         

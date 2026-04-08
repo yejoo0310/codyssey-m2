@@ -1,13 +1,15 @@
 from model import BestRecord, MultipleChoiceQuiz, Quizzes
-from storage import StateStore
+from repository import QuizRepository, StateRepository
 from vo import Answer, Choices, Question
+
 
 class QuizGame:
     def __init__(self) -> None:
         self.quizzes = Quizzes()
         self.best_record = BestRecord()
-        self.file_path = "state.json"
-        self.state_store = StateStore(self.file_path)
+        self.state_repository = StateRepository("state.json")
+        self.quiz_repository = QuizRepository("quiz.json")
+        self.default_quiz_repository = QuizRepository("default-quiz.json")
         self.load_state()
     
     def show_menu(self) -> int | None:
@@ -61,16 +63,16 @@ class QuizGame:
             self.save_state()
 
     def set_default_quizzes(self) -> None:
-        self.quizzes = Quizzes(
-            [
-                self.create_quiz("우유가 넘어지면?", ["밀크콩", "초코우유", "아야", "커피"], 3),
-                self.create_quiz("왕이 넘어지면?", ["킹콩", "고릴라", "아야", "콩킹"], 1),
-                self.create_quiz("왕이 양쪽에 있으면?", ["여기저기", "우왕좌왕", "양쪽왕", "왕이둘"], 2),
-                self.create_quiz("Codyssey 입학연수과정에서 시험 보는 요일은?", ["월요일", "수요일", "금요일", "토요일"], 3),
-                self.create_quiz("3월은 영어로?", ["a", "b", "c", "March"], 4),
-            ]
-        )
-        self.save_state()
+        self.quizzes = self.default_quiz_repository.load()
+        self.quiz_repository.save(self.quizzes)
+
+    def restore_default_quizzes(self) -> None:
+        try:
+            self.set_default_quizzes()
+        except FileNotFoundError:
+            raise RuntimeError("default-quiz.json 파일이 존재하지 않습니다.")
+        except ValueError as exc:
+            raise RuntimeError("default-quiz.json 파일이 손상되었습니다.") from exc
 
     def create_quiz(
         self, question: str, choices: list[str], answer: int
@@ -83,30 +85,50 @@ class QuizGame:
         )
     
     def load_state(self) -> None:
+        self.load_best_record()
+        self.load_quizzes()
+
+    def load_best_record(self) -> None:
         try:
-            if not self.state_store.exists():
-                raise FileNotFoundError
-            loaded_quizzes, loaded_record = self.state_store.load()
+            if not self.state_repository.exists():
+                self.best_record = BestRecord()
+                return
+            self.best_record = self.state_repository.load()
+        except FileNotFoundError:
+            self.best_record = BestRecord()
+        except ValueError:
+            print("state.json 파일이 손상되었습니다. 최고 기록을 초기화합니다.")
+            self.best_record = BestRecord()
+        except Exception:
+            print("state.json 파일이 손상되었습니다. 최고 기록을 초기화합니다.")
+            self.best_record = BestRecord()
+
+    def load_quizzes(self) -> None:
+        try:
+            if not self.quiz_repository.exists():
+                print("quiz.json 파일이 존재하지 않습니다. 기본 문제를 생성하겠습니다.")
+                self.restore_default_quizzes()
+                return
+
+            loaded_quizzes = self.quiz_repository.load()
             if loaded_quizzes.has_minimum(5):
                 self.quizzes = loaded_quizzes
-                self.best_record = loaded_record
                 print("퀴즈를 불러왔습니다.")
-            else:
-                print("현재 퀴즈 문제가 5개가 되지 않습닌다. 기본 문제를 생성하겠습니다.")
-                self.set_default_quizzes()
+                return
+
+            print("현재 퀴즈 문제가 5개가 되지 않습닌다. 기본 문제를 생성하겠습니다.")
+            self.restore_default_quizzes()
         except FileNotFoundError:
-            print("파일이 존재하지 않습니다. 기본 문제를 생성하겠습니다.")
-            self.set_default_quizzes()
+            print("quiz.json 파일이 존재하지 않습니다. 기본 문제를 생성하겠습니다.")
+            self.restore_default_quizzes()
         except ValueError:
-            print("state.json 파일이 손상되었습니다. 기본 문제를 생성하겠습니다.")
-            self.set_default_quizzes()
-        except Exception:
-            print("state.json 파일이 손상되었습니다. 기본 문제를 생성하겠습니다.")
-            self.set_default_quizzes()
+            print("quiz.json 파일이 손상되었습니다. 기본 문제를 생성하겠습니다.")
+            self.restore_default_quizzes()
     
     def save_state(self) -> None:
         try:
-            self.state_store.save(self.quizzes, self.best_record)
+            self.state_repository.save(self.best_record)
+            self.quiz_repository.save(self.quizzes)
         except Exception:
             print("저장 중 오류 발생")
     

@@ -25,145 +25,82 @@ flowchart TD
 
 ## Class Diagram
 
+관계 파악이 목적이므로, 아래 다이어그램은 각 클래스의 핵심 책임만 남기고 상세 필드와 보조 메서드는 생략했습니다.
+
 ```mermaid
 classDiagram
     class QuizGame {
-        -Quizzes quizzes
-        -BestRecord best_record
-        -ConsoleView view
-        -StateRepository state_repository
-        -QuizRepository quiz_repository
-        -QuizRepository default_quiz_repository
         +run() None
-        +create_quiz(question: str, choices: list[str], answer: int) MultipleChoiceQuiz
-        +load_state() None
         +play_quiz() None
         +add_quiz() None
-        +show_result(score: int) None
-        +save_state() None
     }
 
     class ConsoleView {
         +show_menu() Command | None
         +show_quiz(quiz: MultipleChoiceQuiz, index: int) None
-        +get_answer_input(quiz: MultipleChoiceQuiz) Answer | None
-        +get_new_quiz_form() tuple~str, list[str], int~ | None
         +show_result(total_count: int, count: int, is_new_best: bool) None
-        +show_quiz_list(quizzes: Quizzes) None
-        +show_best_record(best_record: BestRecord) None
-        +show_error_message(message: str) None
     }
 
     class QuizRepository {
-        +exists() bool
         +load() Quizzes
         +save(quizzes: Quizzes) None
     }
 
     class StateRepository {
-        +exists() bool
         +load() BestRecord
         +save(best_record: BestRecord) None
     }
 
-    class JsonFileQuizRepository {
-        -str _file_path
-        +exists() bool
-        +load() Quizzes
-        +save(quizzes: Quizzes) None
-    }
-
-    class JsonFileStateRepository {
-        -str _file_path
-        +exists() bool
-        +load() BestRecord
-        +save(best_record: BestRecord) None
-    }
+    class JsonFileQuizRepository
+    class JsonFileStateRepository
 
     class MultipleChoiceQuiz {
-        -Question _question
-        -Choices _choices
-        -Answer _answer
-        +question() str
-        +choices() Choices
-        +answer() int
-        +answer_label() str
         +is_correct(user_answer: Answer) bool
     }
 
     class Quizzes {
-        +list~MultipleChoiceQuiz~ value
         +add(quiz: MultipleChoiceQuiz) None
-        +count() int
         +is_empty() bool
-        +has_minimum(count: int) bool
         +items() list~MultipleChoiceQuiz~
     }
 
     class BestRecord {
-        -int _score
-        -int _total_count
-        -int _best_count
         +update(total_count: int, best_count: int) bool
-        +has_score() bool
-        +score() int
-        +total_count() int
-        +best_count() int
         +summary_text() str
     }
 
-    class Question {
-        +str value
-    }
-
-    class Choice {
-        +str value
-    }
+    class Question
+    class Choice
 
     class Choices {
-        -tuple~Choice~ _choices
         +from_texts(texts: list[str]) Choices
-        +texts() list[str]
-        +count() int
     }
 
     class Answer {
-        +int value
         +label() str
         +matches(answer: Answer) bool
     }
 
     class Command {
-        +int value
         +is_play_quiz() bool
         +is_add_quiz() bool
-        +is_view_quiz_list() bool
-        +is_show_best_score() bool
         +is_exit() bool
     }
 
-    QuizGame --> ConsoleView : uses
-    QuizGame --> QuizRepository : uses
-    QuizGame --> StateRepository : uses
+    QuizGame --> ConsoleView : interacts with
+    QuizGame --> QuizRepository : loads/saves quizzes
+    QuizGame --> StateRepository : loads/saves record
     QuizGame --> Quizzes : manages
-    QuizGame --> BestRecord : manages
+    QuizGame --> BestRecord : updates
     QuizGame --> MultipleChoiceQuiz : creates
     QuizGame --> Question : creates
     QuizGame --> Choices : creates
     QuizGame --> Answer : creates
 
-    QuizRepository --> Quizzes : loads/saves
-    StateRepository --> BestRecord : loads/saves
     JsonFileQuizRepository --|> QuizRepository
     JsonFileStateRepository --|> StateRepository
-
-    JsonFileQuizRepository --> Quizzes : loads/saves
-    JsonFileQuizRepository --> MultipleChoiceQuiz : serializes
-    JsonFileQuizRepository --> Question : creates
-    JsonFileQuizRepository --> Choices : creates
-    JsonFileQuizRepository --> Answer : creates
-
-    JsonFileStateRepository --> BestRecord : loads/saves
+    QuizRepository --> Quizzes : persists
+    StateRepository --> BestRecord : persists
 
     MultipleChoiceQuiz *-- Question
     MultipleChoiceQuiz *-- Choices

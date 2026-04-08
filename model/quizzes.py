@@ -1,3 +1,5 @@
+import random
+
 from model.multiple_choice_quiz import MultipleChoiceQuiz
 
 
@@ -27,3 +29,13 @@ class Quizzes:
 
     def items(self) -> list[MultipleChoiceQuiz]:
         return list(self.value)
+
+    def pick_random(self, count: int) -> list[MultipleChoiceQuiz]:
+        if not isinstance(count, int):
+            raise ValueError("선택할 문제 수는 정수여야 합니다.")
+        if count < 1:
+            raise ValueError("선택할 문제 수는 1 이상이어야 합니다.")
+        if count > self.count():
+            raise ValueError("선택할 문제 수는 보유한 퀴즈 수를 초과할 수 없습니다.")
+
+        return random.sample(self.value, count)

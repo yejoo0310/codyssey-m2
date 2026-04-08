@@ -1,5 +1,5 @@
 from model import BestRecord, MultipleChoiceQuiz, Quizzes
-from vo import Answer, Command
+from vo import Answer, Command, QuizPlayCommand
 
 
 class ConsoleView:
@@ -58,6 +58,9 @@ class ConsoleView:
     def show_save_error(self) -> None:
         print("저장 중 오류 발생")
 
+    def show_history_save_error(self) -> None:
+        print("기록 저장 중 오류 발생")
+
     def show_error_message(self, message: str) -> None:
         print(message)
 
@@ -67,6 +70,24 @@ class ConsoleView:
     def show_quiz_start(self, total_count: int) -> None:
         print(f"\n📝 퀴즈를 시작합니다! (총 {total_count}문제)")
 
+    def get_quiz_count(self, max_count: int) -> int | None:
+        while True:
+            try:
+                user_input = input(
+                    f"\n풀 문제 개수 선택 (1-{max_count}): "
+                ).strip()
+                if not user_input:
+                    print("입력이 비어있습니다. 문제 개수를 입력해주세요.")
+                    continue
+
+                try:
+                    return int(user_input)
+                except ValueError:
+                    print("잘못된 입력입니다. 숫자로 문제 개수를 입력해주세요.")
+            except (KeyboardInterrupt, EOFError):
+                print("\n사용자에 의해 퀴즈 시작을 중단합니다.\n")
+                return None
+
     def show_quiz(self, quiz: MultipleChoiceQuiz, index: int) -> None:
         print("\n----------------------------------------")
         print(f"[문제 {index}]")
@@ -74,13 +95,21 @@ class ConsoleView:
         for number, choice in enumerate(quiz.choices().texts(), start=1):
             print(f"{number}. {choice}")
 
-    def get_answer_input(self, quiz: MultipleChoiceQuiz) -> Answer | None:
+    def show_hint(self, hint: str) -> None:
+        print(f"힌트: {hint}")
+
+    def get_answer_input(
+        self, quiz: MultipleChoiceQuiz
+    ) -> Answer | QuizPlayCommand | None:
         while True:
             try:
-                user_input = input("\n정답 입력: ").strip()
+                user_input = input("\n정답 입력 (/hint 가능): ").strip()
                 if not user_input:
                     print("입력이 비어있습니다. 1-4 사이의 번호를 입력해주세요.")
                     continue
+
+                if user_input == "/hint":
+                    return QuizPlayCommand(user_input)
 
                 try:
                     answer_value = int(user_input)
@@ -113,13 +142,14 @@ class ConsoleView:
             print("🎉 새로운 최고 점수입니다! 최고 점수가 갱신되었습니다!")
         print("========================================\n")
 
-    def get_new_quiz_form(self) -> tuple[str, list[str], int] | None:
+    def get_new_quiz_form(self) -> tuple[str, list[str], int, str] | None:
         print("\n📌 새로운 퀴즈를 추가합니다.\n")
         try:
             return (
                 self._get_question_input(),
                 self._get_choices_input(),
                 self._get_new_quiz_answer_input(),
+                self._get_hint_input(),
             )
         except (KeyboardInterrupt, EOFError):
             print("\n퀴즈 추가가 취소되었습니다. 메뉴로 돌아갑니다.\n")
@@ -145,6 +175,9 @@ class ConsoleView:
                 continue
 
             return answer_number
+
+    def _get_hint_input(self) -> str:
+        return input("힌트: ")
 
     def show_quiz_saved(self) -> None:
         print("\n퀴즈가 정상적으로 저장되었습니다!\n")

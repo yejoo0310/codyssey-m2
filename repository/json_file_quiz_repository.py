@@ -3,7 +3,7 @@ import os
 
 from model import MultipleChoiceQuiz, Quizzes
 from repository.quiz_repository import QuizRepository
-from vo import Answer, Choices, Question
+from vo import Answer, Choices, Hint, Question
 
 
 class JsonFileQuizRepository(QuizRepository):
@@ -34,6 +34,7 @@ class JsonFileQuizRepository(QuizRepository):
                 Question(data["question"]),
                 choices,
                 Answer(data["answer"], choices),
+                Hint(data["hint"]),
             )
         except KeyError as exc:
             raise ValueError(f"누락된 퀴즈 데이터입니다: {exc}") from exc
@@ -43,4 +44,5 @@ class JsonFileQuizRepository(QuizRepository):
             "question": quiz.question(),
             "choices": quiz.choices().texts(),
             "answer": quiz.answer(),
+            "hint": quiz.hint(),
         }

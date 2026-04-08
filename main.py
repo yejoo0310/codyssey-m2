@@ -1,4 +1,3 @@
-from models import Quiz
 from controller import QuizGame
 
 def main():

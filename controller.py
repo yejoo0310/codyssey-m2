@@ -1,12 +1,13 @@
-from models import Quiz
-import os
-import json
+from model import BestRecord, MultipleChoiceQuiz
+from storage import StateStore
+from vo import AnswerIndex, ChoiceList, QuestionText
 
 class QuizGame:
     def __init__(self):
         self.quizzes = []
-        self.best_record = {"score": 0, "total_count": 0, "best_count": 0}
+        self.best_record = BestRecord()
         self.file_path = "state.json"
+        self.state_store = StateStore(self.file_path)
         self.load_state()
     
     def show_menu(self):
@@ -61,50 +62,46 @@ class QuizGame:
 
     def set_default_quizzes(self):
         self.quizzes = [
-            Quiz("우유가 넘어지면?", ["밀크콩", "초코우유", "아야", "커피"], 3),
-            Quiz("왕이 넘어지면?", ["킹콩", "고릴라", "아야", "콩킹"], 1),
-            Quiz("왕이 양쪽에 있으면?", ["여기저기", "우왕좌왕", "양쪽왕", "왕이둘"], 2),
-            Quiz("Codyssey 입학연수과정에서 시험 보는 요일은?", ["월요일", "수요일", "금요일", "토요일"], 3),
-            Quiz("3월은 영어로?", ["a", "b", "c", "March"], 4)
+            self.create_quiz("우유가 넘어지면?", ["밀크콩", "초코우유", "아야", "커피"], 3),
+            self.create_quiz("왕이 넘어지면?", ["킹콩", "고릴라", "아야", "콩킹"], 1),
+            self.create_quiz("왕이 양쪽에 있으면?", ["여기저기", "우왕좌왕", "양쪽왕", "왕이둘"], 2),
+            self.create_quiz("Codyssey 입학연수과정에서 시험 보는 요일은?", ["월요일", "수요일", "금요일", "토요일"], 3),
+            self.create_quiz("3월은 영어로?", ["a", "b", "c", "March"], 4)
         ]
         self.save_state()
+
+    def create_quiz(self, question, choices, answer):
+        return MultipleChoiceQuiz(
+            QuestionText(question),
+            ChoiceList(choices),
+            AnswerIndex(answer),
+        )
     
     def load_state(self):
         try:
-            if not os.path.exists(self.file_path):
+            if not self.state_store.exists():
                 raise FileNotFoundError
-            with open(self.file_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                self.best_record = data.get("best_record", {"score": 0, "total_count": 0, "best_count": 0})
-
-                temp_quizzess = []
-                for q in data.get("quizzes", []):
-                    new_quiz = Quiz(q['question'], q['choices'], q['answer'])
-                    temp_quizzess.append(new_quiz)
-                if len(temp_quizzess) >= 5:
-                    self.quizzes = temp_quizzess
-                    print("퀴즈를 불러왔습니다.")
-                else:
-                    print("현재 퀴즈 문제가 5개가 되지 않습닌다. 기본 문제를 생성하겠습니다.")
-                    self.set_default_quizzes()
+            loaded_quizzes, loaded_record = self.state_store.load()
+            if len(loaded_quizzes) >= 5:
+                self.quizzes = loaded_quizzes
+                self.best_record = loaded_record
+                print("퀴즈를 불러왔습니다.")
+            else:
+                print("현재 퀴즈 문제가 5개가 되지 않습닌다. 기본 문제를 생성하겠습니다.")
+                self.set_default_quizzes()
         except FileNotFoundError:
             print("파일이 존재하지 않습니다. 기본 문제를 생성하겠습니다.")
             self.set_default_quizzes()
-        except json.JSONDecodeError:
+        except ValueError:
             print("state.json 파일이 손상되었습니다. 기본 문제를 생성하겠습니다.")
             self.set_default_quizzes()
-        except Exception as e:
-            print("오류가 발생하였습니다. 기본 문제를 생성하겠습니다.")
+        except Exception:
+            print("state.json 파일이 손상되었습니다. 기본 문제를 생성하겠습니다.")
             self.set_default_quizzes()
     
     def save_state(self):
         try:
-            data = {
-                "quizzes": [quiz.to_dict() for quiz in self.quizzes],
-                "best_record": self.best_record
-            }   
-            with open(self.file_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, ensure_ascii=False, indent=4)
+            self.state_store.save(self.quizzes, self.best_record)
         except Exception:
             print("저장 중 오류 발생")
     
@@ -128,7 +125,7 @@ class QuizGame:
                 print("정답입니다!")
                 current_score += 1
             else:
-                print(f"틀렸습니다. 정답은 {quiz.answer}번입니다.")
+                print(f"틀렸습니다. 정답은 {quiz.answer_label()}입니다.")
         
         self.show_result(current_score)
 
@@ -139,13 +136,9 @@ class QuizGame:
             print("한 문제도 맞히지 못했습니다.")
             return
         print(f"🏆 결과: {len(self.quizzes)}문제 중 {score}문제 정답! ({percentage}점)")
-        if percentage > self.best_record["score"] or (percentage == self.best_record["score"] and len(self.quizzes) > self.best_record["total_count"]):
+        if self.best_record.should_update(percentage, len(self.quizzes)):
             print("🎉 새로운 최고 점수입니다! 최고 점수가 갱신되었습니다!")
-            self.best_record = {
-                "score": percentage,
-                "total_count": len(self.quizzes),
-                "best_count": score
-            }
+            self.best_record.update(percentage, len(self.quizzes), score)
             self.save_state()
         print("========================================\n")
 
@@ -200,7 +193,7 @@ class QuizGame:
                 except ValueError:
                     print("잘못된 입력입니다. 1-4 사이의 정답 번호를 입력해주세요.")
             
-            new_quiz = Quiz(question, choices, answer)
+            new_quiz = self.create_quiz(question, choices, answer)
             self.quizzes.append(new_quiz)
             self.save_state()
             print("\n퀴즈가 정상적으로 저장되었습니다!\n")
@@ -214,11 +207,11 @@ class QuizGame:
         print(f"\n📋 등록된 퀴즈 목록 (총 {len(self.quizzes)}개)")
         print("\n----------------------------------------")
         for i, quiz in enumerate(self.quizzes, start = 1):
-            print(f"[문제{i}] {quiz.question}")
+            print(f"[문제{i}] {quiz.question_text()}")
         print("----------------------------------------")
 
     def show_best_score(self):
-        if self.best_record["score"] == 0:
+        if not self.best_record.has_score():
             print("\n아직 기록된 최고 점수가 없습니다.")
             return
-        print(f"\n🏆 최고 점수: {self.best_record['score']}점 ({self.best_record['total_count']}문제 중 {self.best_record['best_count']}문제 정답)\n")
+        print(f"\n🏆 최고 점수: {self.best_record.summary_text()}\n")

@@ -1,6 +1,7 @@
 from models import Quiz
 import os
 import json
+import random
 
 class QuizGame:
     def __init__(self):
@@ -146,6 +147,22 @@ class QuizGame:
                     return None
                 raise
     
+    def get_question_count(self):
+        total_count = len(self.quizzes)
+        
+        return self.get_input_number(
+            prompt=f"\n출제할 문제 수를 입력하세요 (총 {total_count}개): ",
+            min_value=1,
+            max_value=total_count,
+            empty_message=f"입력이 비어있습니다. 1-{total_count} 사이의 숫자를 입력해주세요.",
+            invalid_message=f"잘못된 입력입니다. 1-{total_count} 사이의 숫자를 입력해주세요.",
+            cancel_message="\n사용자에 의해 문제 수 선택이 취소되었습니다.\n",
+            return_none=True
+        )
+    
+    def get_random_quizzes(self, question_count):
+        return random.sample(self.quizzes, question_count)
+    
     def play_quiz(self):
         min_value = 1
         max_value = 4
@@ -153,11 +170,17 @@ class QuizGame:
             print("\n등록된 퀴즈가 없습니다. 먼저 퀴즈를 추가해주세요!")
             return
         
-        print(f"\n📝 퀴즈를 시작합니다! (총 {len(self.quizzes)}문제)")
+        question_count = self.get_question_count()
+        if question_count is None:
+            return
+        
+        selected_quizzes = self.get_random_quizzes(question_count)
+        
+        print(f"\n📝 퀴즈를 시작합니다! (총 {question_count}문제)")
 
         current_score = 0
 
-        for i, quiz in enumerate(self.quizzes, start = 1):
+        for i, quiz in enumerate(selected_quizzes, start = 1):
             quiz.display(i)
             user_input = self.get_input_number(
                 prompt="\n정답 입력: ",
@@ -178,20 +201,20 @@ class QuizGame:
             else:
                 print(f"틀렸습니다. 정답은 {quiz.answer}번입니다.")
         
-        self.show_result(current_score)
+        self.show_result(current_score, question_count)
 
-    def show_result(self, score):
-        percentage = int((score/len(self.quizzes)) * 100)
+    def show_result(self, score, total_count):
+        percentage = int((score/total_count) * 100)
         print("\n\n========================================")
         if score == 0 or percentage == 0:
             print("한 문제도 맞히지 못했습니다.")
             return
-        print(f"🏆 결과: {len(self.quizzes)}문제 중 {score}문제 정답! ({percentage}점)")
-        if percentage > self.best_record["score"] or (percentage == self.best_record["score"] and len(self.quizzes) > self.best_record["total_count"]):
+        print(f"🏆 결과: {total_count}문제 중 {score}문제 정답! ({percentage}점)")
+        if percentage > self.best_record["score"] or (percentage == self.best_record["score"] and total_count > self.best_record["total_count"]):
             print("🎉 새로운 최고 점수입니다! 최고 점수가 갱신되었습니다!")
             self.best_record = {
                 "score": percentage,
-                "total_count": len(self.quizzes),
+                "total_count": total_count,
                 "best_count": score
             }
             self.save_state()

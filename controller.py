@@ -221,4 +221,4 @@ class QuizGame:
         if self.best_record["score"] == 0:
             print("\n아직 기록된 최고 점수가 없습니다.")
             return
-        print(f"\n🏆 최고 점수: {self.best_record["score"]}점 ({self.best_record["total_count"]}문제 중 {self.best_record["best_count"]}문제 정답)\n")
+        print(f"\n🏆 최고 점수: {self.best_record['score']}점 ({self.best_record['total_count']}문제 중 {self.best_record['best_count']}문제 정답)\n")

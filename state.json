@@ -1,72 +1,53 @@
 {
-    "quizzes": [
-        {
-            "question": "우유가 넘어지면?",
-            "choices": [
-                "밀크콩",
-                "초코우유",
-                "아야",
-                "커피"
-            ],
-            "answer": 3,
-            "hint": "고개를 돌려서 '우유'를 보세요."
-        },
-        {
-            "question": "왕이 넘어지면?",
-            "choices": [
-                "킹콩",
-                "고릴라",
-                "아야",
-                "콩킹"
-            ],
-            "answer": 1,
-            "hint": "왕의 영어 표현을 생각해보세요."
-        },
-        {
-            "question": "왕이 양쪽에 있으면?",
-            "choices": [
-                "여기저기",
-                "우왕좌왕",
-                "양쪽왕",
-                "왕이둘"
-            ],
-            "answer": 2,
-            "hint": "왕이 왼쪽에도 있고 오른쪽에도 있는 상황을 떠올려보세요."
-        },
-        {
-            "question": "바나나가 웃으면?",
-            "choices": [
-                "바나나우유",
-                "바나나",
-                "바나나킥",
-                "킥킥"
-            ],
-            "answer": 3,
-            "hint": "바나나 맛이 나는 과자 이름입니다."
-        },
-        {
-            "question": "모두 일어나게 하는 숫자는?",
-            "choices": [
-                "하나",
-                "둘",
-                "셋",
-                "다섯"
-            ],
-            "answer": 4,
-            "hint": "초성힌트: 'ㄷㅅ'"
-        }
-    ],
-    "best_record": {
-        "score": 4,
-        "total_count": 2,
-        "best_count": 2
+  "quizzes": [
+    {
+      "question": "우유가 넘어지면?",
+      "choices": ["밀크콩", "초코우유", "아야", "커피"],
+      "answer": 3,
+      "hint": "고개를 돌려서 '우유'를 보세요."
     },
-    "history": [
-        {
-            "played_at": "2026-04-09 01:40:14",
-            "score": 4,
-            "total_count": 2,
-            "correct_count": 2
-        }
-    ]
+    {
+      "question": "왕이 넘어지면?",
+      "choices": ["킹콩", "고릴라", "아야", "콩킹"],
+      "answer": 1,
+      "hint": "왕의 영어 표현을 생각해보세요."
+    },
+    {
+      "question": "왕이 양쪽에 있으면?",
+      "choices": ["여기저기", "우왕좌왕", "양쪽왕", "왕이둘"],
+      "answer": 2,
+      "hint": "왕이 왼쪽에도 있고 오른쪽에도 있는 상황을 떠올려보세요."
+    },
+    {
+      "question": "바나나가 웃으면?",
+      "choices": ["바나나우유", "바나나", "바나나킥", "킥킥"],
+      "answer": 3,
+      "hint": "바나나 맛이 나는 과자 이름입니다."
+    },
+    {
+      "question": "모두 일어나게 하는 숫자는?",
+      "choices": ["하나", "둘", "셋", "다섯"],
+      "answer": 4,
+      "hint": "초성힌트: 'ㄷㅅ'"
+    }
+  ],
+  "best_record": {
+    "score": 4,
+    "total_count": 2,
+    "best_count": 2
+  },
+  "history": [
+    {
+      "played_at": "2026-04-09 01:40:14",
+      "score": 4,
+      "total_count": 2,
+      "correct_count": 2
+    },
+    {
+      "played_at": "2026-04-09 02:40:24",
+      "score": 1,
+      "total_count": 2,
+      "correct_count": 1
+    }
+  ]
 }

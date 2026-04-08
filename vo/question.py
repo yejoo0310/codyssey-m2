@@ -1,5 +1,7 @@
-class QuestionText:
-    def __init__(self, value):
+class Question:
+    value: str
+
+    def __init__(self, value: str) -> None:
         if not isinstance(value, str):
             raise ValueError("문제는 문자열이어야 합니다.")
 
@@ -7,8 +9,4 @@ class QuestionText:
         if not normalized:
             raise ValueError("문제는 비어있을 수 없습니다.")
 
-        self._value = normalized
-
-    @property
-    def value(self):
-        return self._value
+        self.value = normalized

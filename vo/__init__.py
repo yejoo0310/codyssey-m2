@@ -1,5 +1,6 @@
-from .answer_index import AnswerIndex
-from .choice_list import ChoiceList
-from .question_text import QuestionText
+from .answer import Answer
+from .choice import Choice
+from .choices import Choices
+from .question import Question
 
-__all__ = ["AnswerIndex", "ChoiceList", "QuestionText"]
+__all__ = ["Answer", "Choice", "Choices", "Question"]

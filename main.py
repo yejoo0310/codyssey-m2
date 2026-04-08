@@ -1,6 +1,6 @@
 from controller import QuizGame
 
-def main():
+def main() -> None:
     game = QuizGame()
     game.run()
 

@@ -1,5 +1,10 @@
 from model import BestRecord, MultipleChoiceQuiz, Quizzes
-from repository import QuizRepository, StateRepository
+from repository import (
+    JsonFileQuizRepository,
+    JsonFileStateRepository,
+    QuizRepository,
+    StateRepository,
+)
 from view import ConsoleView
 from vo import Answer, Choices, Command, Question
 
@@ -9,9 +14,11 @@ class QuizGame:
         self.quizzes = Quizzes()
         self.best_record = BestRecord()
         self.view = ConsoleView() if view is None else view
-        self.state_repository = StateRepository("state.json")
-        self.quiz_repository = QuizRepository("quiz.json")
-        self.default_quiz_repository = QuizRepository("default-quiz.json")
+        self.state_repository: StateRepository = JsonFileStateRepository("state.json")
+        self.quiz_repository: QuizRepository = JsonFileQuizRepository("quiz.json")
+        self.default_quiz_repository: QuizRepository = JsonFileQuizRepository(
+            "default-quiz.json"
+        )
         self.load_state()
     
     def run(self) -> None:

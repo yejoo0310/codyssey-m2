@@ -12,8 +12,8 @@ class MultipleChoiceQuiz:
     def question(self) -> str:
         return self._question.value
 
-    def choices(self) -> list[str]:
-        return self._choices.texts()
+    def choices(self) -> Choices:
+        return self._choices
 
     def answer(self) -> int:
         return self._answer.value
@@ -21,12 +21,5 @@ class MultipleChoiceQuiz:
     def answer_label(self) -> str:
         return self._answer.label()
 
-    def display(self, index: int) -> None:
-        print("\n----------------------------------------")
-        print(f"[문제 {index}]")
-        print(f"{self.question()}\n")
-        for i, choice in enumerate(self.choices(), start=1):
-            print(f"{i}. {choice}")
-
-    def is_correct(self, user_input: int) -> bool:
-        return self._answer.matches(user_input)
+    def is_correct(self, user_answer: Answer) -> bool:
+        return self._answer.matches(user_answer)

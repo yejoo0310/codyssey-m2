@@ -40,6 +40,6 @@ class QuizRepository:
     def _serialize(self, quiz: MultipleChoiceQuiz) -> dict:
         return {
             "question": quiz.question(),
-            "choices": quiz.choices(),
+            "choices": quiz.choices().texts(),
             "answer": quiz.answer(),
         }

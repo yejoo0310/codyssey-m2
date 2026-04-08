@@ -114,7 +114,7 @@ class QuizGame:
             
     def add_history(self, started_at, score, total_count, correct_count):
         record = {
-            "played_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "played_at": started_at.strftime("%Y-%m-%d %H:%M:%S"),
             "score": score,
             "total_count": total_count,
             "correct_count": correct_count

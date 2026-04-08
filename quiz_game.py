@@ -1,4 +1,4 @@
-from models import Quiz
+from quiz import Quiz
 import os
 import json
 import random

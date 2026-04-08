@@ -1,5 +1,4 @@
-from models import Quiz
-from controller import QuizGame
+from quiz_game import QuizGame
 
 def main():
     game = QuizGame()

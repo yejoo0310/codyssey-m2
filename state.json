@@ -52,8 +52,28 @@
         }
     ],
     "best_record": {
-        "score": 0,
-        "total_count": 0,
-        "best_count": 0
-    }
+        "score": 100,
+        "total_count": 6,
+        "best_count": 6
+    },
+    "history": [
+        {
+            "played_at": "2026-04-09 00:31:33",
+            "score": 100,
+            "total_count": 3,
+            "correct_count": 3
+        },
+        {
+            "played_at": "2026-04-09 00:31:57",
+            "score": 100,
+            "total_count": 2,
+            "correct_count": 2
+        },
+        {
+            "played_at": "2026-04-09 00:32:19",
+            "score": 80,
+            "total_count": 5,
+            "correct_count": 4
+        }
+    ]
 }

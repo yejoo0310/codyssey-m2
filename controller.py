@@ -2,11 +2,13 @@ from models import Quiz
 import os
 import json
 import random
+from datetime import datetime
 
 class QuizGame:
     def __init__(self):
         self.quizzes = []
         self.best_record = {"score": 0, "total_count": 0, "best_count": 0}
+        self.history = []
         self.file_path = "state.json"
         self.load_state()
     
@@ -76,7 +78,8 @@ class QuizGame:
             with open(self.file_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 self.best_record = data.get("best_record", {"score": 0, "total_count": 0, "best_count": 0})
-
+                self.history = data.get("history", [])
+                
                 temp_quizzess = []
                 for q in data.get("quizzes", []):
                     new_quiz = Quiz(q['question'], q['choices'], q['answer'])
@@ -101,12 +104,22 @@ class QuizGame:
         try:
             data = {
                 "quizzes": [quiz.to_dict() for quiz in self.quizzes],
-                "best_record": self.best_record
+                "best_record": self.best_record,
+                "history": self.history
             }   
             with open(self.file_path, "w", encoding="utf-8") as f:
                 json.dump(data, f, ensure_ascii=False, indent=4)
         except Exception:
             print("저장 중 오류 발생")
+            
+    def add_history(self, started_at, score, total_count, correct_count):
+        record = {
+            "played_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "score": score,
+            "total_count": total_count,
+            "correct_count": correct_count
+        }
+        self.history.append(record)
 
     def get_input_number(self, prompt, min_value, max_value, empty_message, invalid_message, cancel_message, return_none):
         while True:
@@ -177,6 +190,7 @@ class QuizGame:
         selected_quizzes = self.get_random_quizzes(question_count)
         
         print(f"\n📝 퀴즈를 시작합니다! (총 {question_count}문제)")
+        started_at = datetime.now()
 
         current_score = 0
 
@@ -201,14 +215,18 @@ class QuizGame:
             else:
                 print(f"틀렸습니다. 정답은 {quiz.answer}번입니다.")
         
-        self.show_result(current_score, question_count)
+        self.show_result(current_score, question_count, started_at)
 
-    def show_result(self, score, total_count):
+    def show_result(self, score, total_count, started_at):
         percentage = int((score/total_count) * 100)
+        self.add_history(started_at, percentage, total_count, score)
+        
         print("\n\n========================================")
         if score == 0 or percentage == 0:
             print("한 문제도 맞히지 못했습니다.")
+            self.save_state()
             return
+        
         print(f"🏆 결과: {total_count}문제 중 {score}문제 정답! ({percentage}점)")
         if percentage > self.best_record["score"] or (percentage == self.best_record["score"] and total_count > self.best_record["total_count"]):
             print("🎉 새로운 최고 점수입니다! 최고 점수가 갱신되었습니다!")
@@ -217,7 +235,7 @@ class QuizGame:
                 "total_count": total_count,
                 "best_count": score
             }
-            self.save_state()
+        self.save_state()
         print("========================================\n")
 
             

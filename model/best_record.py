@@ -13,16 +13,30 @@ class BestRecord:
             raise ValueError(f"{field_name}는 0 이상이어야 합니다.")
         return value
 
-    def should_update(self, score: int, total_count: int) -> bool:
-        return score > self._score or (
+    def _calculate_score(self, total_count: int, best_count: int) -> int:
+        total_count = self._require_non_negative(total_count, "total_count")
+        best_count = self._require_non_negative(best_count, "best_count")
+
+        if total_count == 0:
+            raise ValueError("total_count는 0보다 커야 합니다.")
+        if best_count > total_count:
+            raise ValueError("best_count는 total_count보다 클 수 없습니다.")
+
+        return int((best_count / total_count) * 100)
+
+    def update(self, total_count: int, best_count: int) -> bool:
+        score = self._calculate_score(total_count, best_count)
+
+        should_update = score > self._score or (
             score == self._score and total_count > self._total_count
         )
+        if not should_update:
+            return False
 
-    def update(self, score: int, total_count: int, best_count: int) -> None:
-        updated = BestRecord(score, total_count, best_count)
-        self._score = updated.score()
-        self._total_count = updated.total_count()
-        self._best_count = updated.best_count()
+        self._score = score
+        self._total_count = total_count
+        self._best_count = best_count
+        return True
 
     def has_score(self) -> bool:
         return self._score > 0

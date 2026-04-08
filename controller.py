@@ -157,15 +157,15 @@ class QuizGame:
         self.show_result(current_score)
 
     def show_result(self, score: int) -> None:
-        percentage = int((score / self.quizzes.count()) * 100)
+        total_count = self.quizzes.count()
+        percentage = int((score / total_count) * 100)
         print("\n\n========================================")
         if score == 0 or percentage == 0:
             print("한 문제도 맞히지 못했습니다.")
             return
-        print(f"🏆 결과: {self.quizzes.count()}문제 중 {score}문제 정답! ({percentage}점)")
-        if self.best_record.should_update(percentage, self.quizzes.count()):
+        print(f"🏆 결과: {total_count}문제 중 {score}문제 정답! ({percentage}점)")
+        if self.best_record.update(total_count, score):
             print("🎉 새로운 최고 점수입니다! 최고 점수가 갱신되었습니다!")
-            self.best_record.update(percentage, self.quizzes.count(), score)
             self.save_state()
         print("========================================\n")
 

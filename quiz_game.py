@@ -96,6 +96,9 @@ class QuizGame:
         except json.JSONDecodeError:
             print("state.json 파일이 손상되었습니다. 기본 문제를 생성하겠습니다.")
             self.set_default_quizzes()
+        except PermissionError:
+            print("파일의 권한이 없어 접근에 실패하였습니다. 기본 문제를 생성하겠습니다.")
+            self.set_default_quizzes()
         except Exception as e:
             print("오류가 발생하였습니다. 기본 문제를 생성하겠습니다.")
             self.set_default_quizzes()

@@ -294,7 +294,7 @@ class QuizGame:
             return
         
         choices = []
-        for i in range(1, 6):
+        for i in range(1, 5):
             choice = self.get_input_string(
                 prompt=f"선택지 {i}: ",
                 empty_message=f"선택지 {i}은(는) 비어있을 수 없습니다. 다시 입력해주세요.",
@@ -306,7 +306,7 @@ class QuizGame:
             choices.append(choice)
         
         min_value=1
-        max_value=5
+        max_value=4
         answer = self.get_input_number(
             prompt=f"정답 번호 ({min_value}-{max_value}): ",
             min_value=min_value,
